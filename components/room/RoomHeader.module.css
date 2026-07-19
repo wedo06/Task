@@ -61,6 +61,90 @@
 .roomId svg { width: 10px; height: 10px; }
 .roomId:hover { border-color: var(--candy-blue); color: var(--text-primary); background: var(--candy-blue); }
 
+.callBtn {
+  font-family: var(--font-display);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(146,209,223,0.25);
+  color: var(--candy-blue);
+}
+.callBtn:hover {
+  background: var(--candy-blue);
+  color: #1a1a2e;
+}
+
+.inviteMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg-surface);
+  border: 1.5px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  width: 200px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  animation: menuIn 0.2s ease;
+}
+
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.inviteMenuTitle {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 6px 8px;
+  letter-spacing: 0.5px;
+}
+
+.inviteMenuEmpty {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 8px;
+  text-align: center;
+}
+
+.inviteMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+.inviteMenuItem:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.inviteMenuAvatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
 /* Nav */
 .nav {
   display: flex;

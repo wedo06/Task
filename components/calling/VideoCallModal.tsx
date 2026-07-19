@@ -51,7 +51,7 @@ export default function VideoCallModal({
 
   return (
     <div className={styles.overlay} ref={containerRef}>
-      <div className={styles.callWindow}>
+      <div className={`${styles.callWindow} ${isFullscreen ? styles.fullscreenWindow : ''}`}>
         <div className={styles.header}>
           <div className={styles.callTitle}>
             <div className={styles.liveDot} />

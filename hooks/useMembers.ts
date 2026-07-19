@@ -42,3 +42,13 @@ export async function updateMemberPresence(roomId: string, memberId: string, isO
     // member may not exist yet — ignore
   }
 }
+
+export async function ringMember(roomId: string, memberId: string, fromName: string) {
+  try {
+    await updateDoc(doc(db, 'rooms', roomId, 'members', memberId), {
+      incomingCall: { fromName, timestamp: Date.now() },
+    });
+  } catch {
+    // ignore
+  }
+}

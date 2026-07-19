@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Room, Member } from '@/types';
 import { calcCompletion } from '@/lib/task-utils';
 import { Task } from '@/types';
+import { ringMember } from '@/hooks/useMembers';
 import styles from './RoomHeader.module.css';
 
 interface Props {
@@ -32,8 +33,16 @@ export default function RoomHeader({
 }: Props) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
+  const [showInviteMenu, setShowInviteMenu] = useState(false);
 
   const onlineCount = members.filter((m) => m.isOnline).length;
+
+  const handleRing = async (member: Member) => {
+    if (!currentMember) return;
+    await ringMember(room.id, member.id, currentMember.name);
+    toast.success(`Rang ${member.name}!`);
+    setShowInviteMenu(false);
+  };
 
   const copyRoomId = () => {
     navigator.clipboard.writeText(room.id);
@@ -99,6 +108,37 @@ export default function RoomHeader({
             <div className={`${styles.avatar} ${styles.avatarMore}`}>+{members.length - 4}</div>
           )}
           <span className={styles.onlineCount}>{onlineCount} online</span>
+        </div>
+
+        <div style={{ position: 'relative' }}>
+          <button
+            className={`btn btn-ghost btn-sm ${styles.callBtn}`}
+            onClick={() => setShowInviteMenu(!showInviteMenu)}
+            title="Invite to Call"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={14} height={14}>
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            Ring
+          </button>
+          
+          {showInviteMenu && (
+            <div className={styles.inviteMenu}>
+              <div className={styles.inviteMenuTitle}>Ring someone:</div>
+              {members.filter(m => m.id !== currentMember?.id).length === 0 ? (
+                <div className={styles.inviteMenuEmpty}>No one else here.</div>
+              ) : (
+                members.filter(m => m.id !== currentMember?.id).map((m) => (
+                  <button key={m.id} className={styles.inviteMenuItem} onClick={() => handleRing(m)}>
+                    <div className={styles.inviteMenuAvatar} style={{ background: stringToColor(m.name) }}>
+                      {m.name.charAt(0).toUpperCase()}
+                    </div>
+                    {m.name}
+                  </button>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         <button

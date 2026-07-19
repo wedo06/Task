@@ -14,6 +14,7 @@ import VideoCallModal from '@/components/calling/VideoCallModal';
 import CallErrorModal from '@/components/calling/CallErrorModal';
 import { carryOverTasks } from '@/lib/task-utils';
 import { getTodayDate } from '@/lib/room-utils';
+import toast from 'react-hot-toast';
 import styles from './room.module.css';
 
 export default function RoomPage() {
@@ -23,13 +24,40 @@ export default function RoomPage() {
 
   const [currentMember, setCurrentMember] = useState<{ id: string; name: string } | null>(null);
   const [activeView, setActiveView] = useState<'board' | 'stats' | 'history'>('board');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [carryDone, setCarryDone] = useState(false);
+  const [lastRingTime, setLastRingTime] = useState(0);
 
   const { room, loading: roomLoading, error: roomError } = useRoom(roomId);
   const { tasks, loading: tasksLoading } = useTasks(roomId);
   const members = useMembers(roomId);
   const videoCall = useVideoCall(roomId, currentMember?.id || '', currentMember?.name || '');
+
+  useEffect(() => {
+    if (!currentMember || !members) return;
+    const me = members.find(m => m.id === currentMember.id);
+    if (me?.incomingCall) {
+      const ring = me.incomingCall;
+      // Only ring if it's within the last 30 seconds and we haven't rung for this timestamp yet
+      if (Date.now() - ring.timestamp < 30000 && ring.timestamp > lastRingTime) {
+        toast((t) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'var(--font-display)' }}>
+            <span style={{ fontWeight: '800' }}>📞 {ring.fromName} is inviting you to a call!</span>
+            <button 
+              className="btn btn-primary btn-sm"
+              onClick={() => {
+                 toast.dismiss(t.id);
+                 videoCall.joinCall();
+              }}
+            >
+              Join Call
+            </button>
+          </div>
+        ), { duration: 15000, position: 'top-right' });
+        setLastRingTime(ring.timestamp);
+      }
+    }
+  }, [members, currentMember, lastRingTime, videoCall]);
 
   // Load member from storage (localStorage persists across sessions — same ID on rejoin)
   useEffect(() => {

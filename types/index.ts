@@ -26,6 +26,7 @@ export interface Member {
   joinedAt: number;
   lastSeen: number;
   isOnline: boolean;
+  incomingCall?: { fromName: string; timestamp: number };
 }
 
 export interface DayHistory {
