@@ -10,8 +10,24 @@ export function useMembers(roomId: string) {
     if (!roomId) return;
     const unsub = onSnapshot(collection(db, 'rooms', roomId, 'members'), (snap) => {
       const items: Member[] = [];
-      snap.forEach((d) => items.push(d.data() as Member));
-      setMembers(items.sort((a, b) => a.joinedAt - b.joinedAt));
+      const seenNames = new Set<string>();
+
+      // Sort by joinedAt first so the oldest profile takes precedence
+      const docs = snap.docs.map(d => d.data() as Member).sort((a, b) => a.joinedAt - b.joinedAt);
+
+      for (const d of docs) {
+        const lowerName = d.name.toLowerCase().trim();
+        if (!seenNames.has(lowerName)) {
+          seenNames.add(lowerName);
+          items.push(d);
+        } else if (d.isOnline) {
+          // If a newer duplicate is online but the older isn't, we should update the older one's online status
+          const existing = items.find(i => i.name.toLowerCase().trim() === lowerName);
+          if (existing) existing.isOnline = true;
+        }
+      }
+      
+      setMembers(items);
     });
     return () => unsub();
   }, [roomId]);
@@ -40,6 +56,16 @@ export async function updateMemberPresence(roomId: string, memberId: string, isO
     });
   } catch {
     // member may not exist yet — ignore
+  }
+}
+
+export async function setCallPresence(roomId: string, memberId: string, inCall: boolean) {
+  try {
+    await updateDoc(doc(db, 'rooms', roomId, 'members', memberId), {
+      inCall,
+    });
+  } catch {
+    // ignore
   }
 }
 

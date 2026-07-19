@@ -26,6 +26,7 @@ export interface Member {
   joinedAt: number;
   lastSeen: number;
   isOnline: boolean;
+  inCall?: boolean;
   incomingCall?: { fromName: string; timestamp: number };
 }
 
@@ -57,4 +58,6 @@ export interface ChatChannel {
   id: string;
   name: string;
   createdAt: number;
+  adminId?: string;
+  allowedMembers?: string[]; // array of memberIds. If undefined or empty, it's public.
 }

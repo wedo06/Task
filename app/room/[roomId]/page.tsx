@@ -70,20 +70,35 @@ export default function RoomPage() {
     setCurrentMember(member);
 
     // Register / update member presence in Firestore
+    const updatePresence = (isOnline: boolean) => {
+      updateMemberPresence(roomId, member.id, isOnline);
+    };
+
     joinRoom(roomId, {
       id: member.id,
       name: member.name,
       joinedAt: Date.now(),
       lastSeen: Date.now(),
-      isOnline: true,
+      isOnline: document.visibilityState === 'visible',
     });
 
-    // Heartbeat every 20s
+    // Heartbeat every 20s if visible
     const interval = setInterval(() => {
-      updateMemberPresence(roomId, member.id, true);
+      if (document.visibilityState === 'visible') {
+        updatePresence(true);
+      }
     }, 20000);
 
-    return () => clearInterval(interval);
+    const handleVisibility = () => {
+      updatePresence(document.visibilityState === 'visible');
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [roomId, router]);
 
   // Carry over incomplete tasks from yesterday
@@ -172,6 +187,9 @@ export default function RoomPage() {
           onToggleCamera={videoCall.toggleCamera}
           onLeave={videoCall.leaveCall}
           currentMemberName={currentMember?.name || ''}
+          members={members}
+          roomId={roomId}
+          currentMemberId={currentMember?.id || ''}
         />
       )}
 

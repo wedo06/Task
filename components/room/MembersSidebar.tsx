@@ -33,6 +33,7 @@ function stringToIndex(str: string): number {
 
 export default function MembersSidebar({ roomId, members, tasks, currentMemberId, currentMemberName }: Props) {
   const [activeTab, setActiveTab] = useState<'squad' | 'chat'>('squad');
+  const [hasUnread, setHasUnread] = useState(false);
   const getMemberTasks = (name: string) => tasks.filter((t) => t.assignee === name);
 
   return (
@@ -47,12 +48,16 @@ export default function MembersSidebar({ roomId, members, tasks, currentMemberId
         <button 
           className={`${styles.tabBtn} ${activeTab === 'chat' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('chat')}
+          style={{ position: 'relative' }}
         >
           Chat
+          {hasUnread && activeTab !== 'chat' && (
+            <div style={{ position: 'absolute', top: '6px', right: '12px', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-red)' }} />
+          )}
         </button>
       </div>
 
-      {activeTab === 'squad' ? (
+      <div style={{ display: activeTab === 'squad' ? 'block' : 'none' }}>
         <>
           <div className={styles.heading}>
             {members.filter(m => m.isOnline).length} online
@@ -144,15 +149,18 @@ export default function MembersSidebar({ roomId, members, tasks, currentMemberId
           </div>
         )}
       </>
-    ) : (
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <ChatPanel 
-            roomId={roomId} 
-            currentMemberId={currentMemberId || ''} 
-            currentMemberName={currentMemberName || ''} 
-          />
-        </div>
-      )}
+      </div>
+
+      <div style={{ display: activeTab === 'chat' ? 'flex' : 'none', flex: 1, flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        <ChatPanel 
+          roomId={roomId} 
+          currentMemberId={currentMemberId || ''} 
+          currentMemberName={currentMemberName || ''}
+          members={members}
+          onUnreadChange={(hasUnread) => setHasUnread(hasUnread)}
+          isActive={activeTab === 'chat'}
+        />
+      </div>
     </div>
   );
 }

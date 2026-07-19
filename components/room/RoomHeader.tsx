@@ -110,7 +110,24 @@ export default function RoomHeader({
           <span className={styles.onlineCount}>{onlineCount} online</span>
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', display: 'flex', gap: '8px' }}>
+          {members.some(m => m.inCall) && !inCall && (
+            <button
+              className={`btn btn-primary btn-sm`}
+              onClick={onCallJoin}
+              title="Join Active Call"
+              style={{
+                animation: 'pulse-glow 2s infinite',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <div className={styles.liveDot} style={{ background: '#fff', width: 6, height: 6, boxShadow: 'none' }} />
+              Active Call
+            </button>
+          )}
+
           <button
             className={`btn btn-ghost btn-sm ${styles.callBtn}`}
             onClick={() => setShowInviteMenu(!showInviteMenu)}

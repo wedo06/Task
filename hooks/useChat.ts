@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import { db, collection, addDoc, onSnapshot, query, orderBy, limit, doc, setDoc, updateDoc } from '@/lib/firebase';
 import { ChatMessage, ChatChannel } from '@/types';
 
-export function useChat(roomId: string, channelId: string) {
+export function useChat(roomId: string, channelId: string, currentMemberId?: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [channels, setChannels] = useState<ChatChannel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Load Channels
   useEffect(() => {
@@ -22,11 +23,15 @@ export function useChat(roomId: string, channelId: string) {
           createdAt: Date.now()
         });
       } else {
-        setChannels(items.sort((a, b) => a.createdAt - b.createdAt));
+        // Filter channels to only public ones OR ones where user is allowed
+        const visibleChannels = items.filter(c => 
+          !c.allowedMembers || c.allowedMembers.length === 0 || (currentMemberId && c.allowedMembers.includes(currentMemberId)) || c.adminId === currentMemberId
+        );
+        setChannels(visibleChannels.sort((a, b) => a.createdAt - b.createdAt));
       }
     });
     return () => unsub();
-  }, [roomId]);
+  }, [roomId, currentMemberId]);
 
   // Load Messages for current channel
   useEffect(() => {
@@ -49,6 +54,12 @@ export function useChat(roomId: string, channelId: string) {
     return () => unsub();
   }, [roomId, channelId]);
 
+  // Track unread overall in room (simple approach: count messages in last 5 mins not from me)
+  useEffect(() => {
+    if (!roomId || !currentMemberId || messages.length === 0) return;
+    // For now, if the last message in current channel is not from me and within last 10 seconds:
+  }, [messages, currentMemberId]);
+
   const sendMessage = async (memberId: string, memberName: string, text: string) => {
     if (!text.trim() || !channelId) return;
     try {
@@ -63,10 +74,15 @@ export function useChat(roomId: string, channelId: string) {
     }
   };
 
-  const createChannel = async (name: string) => {
+  const createChannel = async (name: string, allowedMembers?: string[]) => {
     try {
       const newRef = doc(collection(db, 'rooms', roomId, 'channels'));
-      await setDoc(newRef, { name: name.toLowerCase().replace(/\s+/g, '-'), createdAt: Date.now() });
+      await setDoc(newRef, { 
+        name: name.toLowerCase().replace(/\s+/g, '-'), 
+        createdAt: Date.now(),
+        adminId: currentMemberId,
+        ...(allowedMembers && allowedMembers.length > 0 ? { allowedMembers: [...allowedMembers, currentMemberId] } : {})
+      });
       return newRef.id;
     } catch (err) {
       console.error(err);

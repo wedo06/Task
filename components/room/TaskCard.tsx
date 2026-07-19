@@ -64,6 +64,9 @@ export default function TaskCard({ task, currentMember, members, onStatusChange,
 
   const isDone = task.status === 'done';
   const nextStatus = STATUS_NEXT[task.status];
+  
+  // Can manage if unassigned or assigned to current user
+  const canManage = !task.assignee || (currentMember?.name && task.assignee.toLowerCase() === currentMember.name.toLowerCase());
 
   const handleDelete = () => {
     if (confirming) {
@@ -174,6 +177,8 @@ export default function TaskCard({ task, currentMember, members, onStatusChange,
               className={styles.reopenBtn}
               onClick={handleReopen}
               id={`reopen-${task.id}`}
+              disabled={!canManage}
+              style={{ opacity: canManage ? 1 : 0.4, cursor: canManage ? 'pointer' : 'not-allowed' }}
             >
               Reopen
             </button>
@@ -184,6 +189,8 @@ export default function TaskCard({ task, currentMember, members, onStatusChange,
             className={styles.nextBtn}
             onClick={() => nextStatus && onStatusChange(nextStatus)}
             id={`status-${task.id}`}
+            disabled={!canManage}
+            style={{ opacity: canManage ? 1 : 0.4, cursor: canManage ? 'pointer' : 'not-allowed' }}
           >
             {task.status === 'todo' ? (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width={13} height={13}>
@@ -202,7 +209,9 @@ export default function TaskCard({ task, currentMember, members, onStatusChange,
           className={`${styles.deleteBtn} ${confirming ? styles.deleteBtnConfirm : ''}`}
           onClick={handleDelete}
           id={`delete-task-${task.id}`}
-          title={confirming ? 'Click again to confirm' : 'Delete'}
+          title={!canManage ? 'Cannot delete someone else’s task' : confirming ? 'Click again to confirm' : 'Delete'}
+          disabled={!canManage}
+          style={{ opacity: canManage ? 1 : 0.4, cursor: canManage ? 'pointer' : 'not-allowed' }}
         >
           {confirming ? 'Sure?' : (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={13} height={13}>

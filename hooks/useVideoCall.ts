@@ -2,6 +2,7 @@
 import { useState, useRef, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { AGORA_APP_ID } from '@/lib/agora';
+import { setCallPresence } from '@/hooks/useMembers';
 
 export interface RemoteUser {
   uid: string | number;
@@ -9,7 +10,7 @@ export interface RemoteUser {
   audioTrack?: any;
 }
 
-export type CallError = 'agora_certificate' | 'no_app_id' | 'generic' | null;
+export type CallError = 'no_app_id' | 'agora_certificate' | 'agora_network' | 'agora_permissions' | null;
 
 async function fetchAgoraToken(channelName: string, uid: number): Promise<string | null> {
   try {
@@ -114,8 +115,9 @@ export function useVideoCall(roomId: string, userId: string, userName: string) {
 
       setLocalAudioTrack(audioTrack);
       setLocalVideoTrack(videoTrack);
+      setIsConnecting(false);
       setInCall(true);
-      toast.success(`On the call!`);
+      setCallPresence(roomId, userId, true);
     } catch (err: any) {
       console.error('Failed to join call:', err);
       if (
@@ -125,7 +127,7 @@ export function useVideoCall(roomId: string, userId: string, userName: string) {
       ) {
         setCallError('agora_certificate');
       } else {
-        setCallError('generic');
+        setCallError('agora_network');
         toast.error(err?.message || 'Could not join call');
       }
     } finally {
@@ -137,14 +139,15 @@ export function useVideoCall(roomId: string, userId: string, userName: string) {
     if (localAudioTrack) { localAudioTrack.stop(); localAudioTrack.close(); }
     if (localVideoTrack) { localVideoTrack.stop(); localVideoTrack.close(); }
     if (clientRef.current) await clientRef.current.leave();
-    setLocalAudioTrack(null);
-    setLocalVideoTrack(null);
-    setRemoteUsers([]);
+
     setInCall(false);
+    setLocalVideoTrack(null);
+    setLocalAudioTrack(null);
+    setRemoteUsers([]);
     setIsMuted(false);
     setIsCameraOff(false);
-    setCallError(null);
-  }, [localAudioTrack, localVideoTrack]);
+    setCallPresence(roomId, userId, false);
+  }, [roomId, userId, localAudioTrack, localVideoTrack]);
 
   const toggleMute = useCallback(() => {
     if (localAudioTrack) {
