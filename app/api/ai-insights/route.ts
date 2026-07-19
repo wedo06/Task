@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
   if (!tasks || tasks.length === 0) {
     return NextResponse.json({
       summary: 'No tasks yet — add some and get cracking.',
-      topPerformer: null,
-      bottleneck: null,
+      topPerformer: undefined,
+      bottleneck: undefined,
       motivation: 'Every big thing started with one small task.',
       completionTrend: 'stable',
     } satisfies AIInsight);
@@ -85,8 +85,8 @@ Return this exact JSON shape:
       // If JSON parse fails, return a safe fallback
       insight = {
         summary: 'Analysis ready — keep pushing.',
-        topPerformer: null,
-        bottleneck: null,
+        topPerformer: undefined,
+        bottleneck: undefined,
         motivation: 'Stay locked in.',
         completionTrend: trend as AIInsight['completionTrend'],
       };
