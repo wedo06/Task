@@ -14,6 +14,8 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 30px rgba(255,194,222,0.35);
   width: 460px;
   max-width: calc(100vw - 40px);
+  display: flex;
+  flex-direction: column;
 }
 
 .fullscreenWindow {
@@ -84,6 +86,8 @@
   gap: 6px;
   padding: 10px;
   background: rgba(0,0,0,0.04);
+  flex: 1;
+  overflow-y: auto;
 }
 
 .grid_1 { grid-template-columns: 1fr; }

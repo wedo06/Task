@@ -79,21 +79,25 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: var(--bg-surface);
-  border: 1.5px solid rgba(0,0,0,0.06);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  width: 200px;
-  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.02);
+  border-radius: var(--radius-lg);
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  padding: 6px;
-  animation: menuIn 0.2s ease;
+  gap: 4px;
+  min-width: 200px;
+  max-width: 90vw;
+  z-index: 1000;
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top right;
 }
 
-@keyframes menuIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .inviteMenuTitle {

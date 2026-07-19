@@ -16,9 +16,19 @@ function stringToColor(str: string): string {
 }
 
 export function ChatPanel({ roomId, currentMemberId, currentMemberName }: Props) {
-  const { messages, loading, sendMessage } = useChat(roomId);
+  const [activeChannelId, setActiveChannelId] = useState<string>('general');
+  const { messages, channels, loading, sendMessage, createChannel, renameChannel } = useChat(roomId, activeChannelId);
   const [text, setText] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [newChannelName, setNewChannelName] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // If active channel gets deleted or doesn't exist initially, default to general
+    if (channels.length > 0 && !channels.find(c => c.id === activeChannelId)) {
+      setActiveChannelId('general');
+    }
+  }, [channels, activeChannelId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -33,15 +43,72 @@ export function ChatPanel({ roomId, currentMemberId, currentMemberName }: Props)
     setText('');
   };
 
-  if (loading) {
+  const handleCreateChannel = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newChannelName.trim()) return;
+    const id = await createChannel(newChannelName);
+    if (id) {
+      setActiveChannelId(id);
+      setIsCreating(false);
+      setNewChannelName('');
+    }
+  };
+
+  const handleRename = () => {
+    const channel = channels.find(c => c.id === activeChannelId);
+    if (!channel) return;
+    const newName = prompt('Rename channel:', channel.name);
+    if (newName && newName.trim()) {
+      renameChannel(activeChannelId, newName.trim());
+    }
+  };
+
+  if (loading && channels.length === 0) {
     return <div className={styles.loading}>Loading chat...</div>;
   }
 
   return (
     <div className={styles.container}>
+      {/* Channel Header */}
+      <div className={styles.channelHeader}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: 4 }}>
+          {channels.map(c => (
+            <button
+              key={c.id}
+              onClick={() => setActiveChannelId(c.id)}
+              className={`${styles.channelTab} ${activeChannelId === c.id ? styles.channelTabActive : ''}`}
+            >
+              #{c.name}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <button className={styles.iconBtn} onClick={() => setIsCreating(!isCreating)} title="New Channel">
+            +
+          </button>
+          <button className={styles.iconBtn} onClick={handleRename} title="Rename Channel" disabled={activeChannelId === 'general'}>
+            ✎
+          </button>
+        </div>
+      </div>
+
+      {isCreating && (
+        <form onSubmit={handleCreateChannel} className={styles.createChannelForm}>
+          <input
+            type="text"
+            placeholder="Channel name..."
+            className={`input-candy ${styles.channelInput}`}
+            value={newChannelName}
+            onChange={e => setNewChannelName(e.target.value)}
+            autoFocus
+          />
+          <button type="submit" className="btn btn-primary btn-sm">Create</button>
+        </form>
+      )}
+
       <div className={styles.messages} ref={scrollRef}>
-        {messages.length === 0 && (
-          <div className={styles.empty}>No messages yet. Start the conversation!</div>
+        {messages.length === 0 && !loading && (
+          <div className={styles.empty}>No messages in #{channels.find(c => c.id === activeChannelId)?.name}. Start the conversation!</div>
         )}
         {messages.map((msg, i) => {
           const isMe = msg.memberId === currentMemberId;
@@ -68,7 +135,7 @@ export function ChatPanel({ roomId, currentMemberId, currentMemberName }: Props)
         <input
           type="text"
           className={`input-candy ${styles.input}`}
-          placeholder="Say something..."
+          placeholder={`Message #${channels.find(c => c.id === activeChannelId)?.name || 'general'}...`}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />

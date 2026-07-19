@@ -52,3 +52,9 @@ export interface ChatMessage {
   text: string;
   timestamp: number;
 }
+
+export interface ChatChannel {
+  id: string;
+  name: string;
+  createdAt: number;
+}

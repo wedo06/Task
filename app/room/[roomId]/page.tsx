@@ -78,20 +78,12 @@ export default function RoomPage() {
       isOnline: true,
     });
 
-    // Heartbeat every 30s
+    // Heartbeat every 20s
     const interval = setInterval(() => {
       updateMemberPresence(roomId, member.id, true);
-    }, 30000);
+    }, 20000);
 
-    // Set offline on close
-    const handleUnload = () => updateMemberPresence(roomId, member.id, false);
-    window.addEventListener('beforeunload', handleUnload);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('beforeunload', handleUnload);
-      updateMemberPresence(roomId, member.id, false);
-    };
+    return () => clearInterval(interval);
   }, [roomId, router]);
 
   // Carry over incomplete tasks from yesterday

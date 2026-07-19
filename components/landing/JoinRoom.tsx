@@ -36,17 +36,22 @@ export default function JoinRoom() {
         return;
       }
 
-      // Check Firestore to see if this name already exists in this room
+      // Check Firestore to see if this name already exists in this room (case-insensitive)
       const membersRef = collection(db, 'rooms', trimmedId, 'members');
-      const q = query(membersRef, where('name', '==', yourName.trim()));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(membersRef);
+
+      let existingDoc = null;
+      querySnapshot.forEach((doc) => {
+        if (doc.data().name.toLowerCase() === yourName.trim().toLowerCase()) {
+          existingDoc = doc;
+        }
+      });
 
       let memberData: { id: string; name: string };
 
-      if (!querySnapshot.empty) {
+      if (existingDoc) {
         // Person exists in DB! Adopt their exact ID
-        const existingDoc = querySnapshot.docs[0];
-        memberData = { id: existingDoc.id, name: existingDoc.data().name };
+        memberData = { id: (existingDoc as any).id, name: (existingDoc as any).data().name };
       } else {
         // Reuse persistent member ID for this name if it exists (from another room maybe)
         const nameKey = `taskhive_member_${yourName.trim().toLowerCase()}`;
