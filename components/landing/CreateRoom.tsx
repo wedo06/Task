@@ -40,6 +40,7 @@ export default function CreateRoom({ onSwitch }: Props) {
         passwordHash,
         createdAt: Date.now(),
         createdBy: yourName.trim(),
+        adminId: memberId,
       });
 
       // Persist identity in localStorage so returning users keep the same ID

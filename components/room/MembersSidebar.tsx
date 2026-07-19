@@ -9,8 +9,9 @@ interface Props {
   roomId: string;
   members: Member[];
   tasks: Task[];
-  currentMemberId?: string;
-  currentMemberName?: string;
+  currentMemberId: string;
+  currentMemberName: string;
+  roomAdminId?: string;
 }
 
 // Pastel candy colors for avatars
@@ -31,7 +32,7 @@ function stringToIndex(str: string): number {
   return Math.abs(hash) % AVATAR_COLORS.length;
 }
 
-export default function MembersSidebar({ roomId, members, tasks, currentMemberId, currentMemberName }: Props) {
+export default function MembersSidebar({ roomId, members, tasks, currentMemberId, currentMemberName, roomAdminId }: Props) {
   const [activeTab, setActiveTab] = useState<'squad' | 'chat'>('squad');
   const [hasUnread, setHasUnread] = useState(false);
   const getMemberTasks = (name: string) => tasks.filter((t) => t.assignee === name);
@@ -159,6 +160,7 @@ export default function MembersSidebar({ roomId, members, tasks, currentMemberId
           members={members}
           onUnreadChange={(hasUnread) => setHasUnread(hasUnread)}
           isActive={activeTab === 'chat'}
+          roomAdminId={roomAdminId}
         />
       </div>
     </div>

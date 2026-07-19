@@ -36,38 +36,25 @@ export default function JoinRoom() {
         return;
       }
 
-      // Check Firestore to see if this name already exists in this room (case-insensitive)
-      const membersRef = collection(db, 'rooms', trimmedId, 'members');
-      const querySnapshot = await getDocs(membersRef);
-
-      let existingDoc = null;
-      querySnapshot.forEach((doc) => {
-        if (doc.data().name.toLowerCase() === yourName.trim().toLowerCase()) {
-          existingDoc = doc;
-        }
-      });
-
+      const nameKey = `taskhive_member_${yourName.trim().toLowerCase()}`;
+      const existingNameEntry = localStorage.getItem(nameKey);
+      
       let memberData: { id: string; name: string };
-
-      if (existingDoc) {
-        // Person exists in DB! Adopt their exact ID
-        memberData = { id: (existingDoc as any).id, name: (existingDoc as any).data().name };
-      } else {
-        // Reuse persistent member ID for this name if it exists (from another room maybe)
-        const nameKey = `taskhive_member_${yourName.trim().toLowerCase()}`;
-        const existingNameEntry = localStorage.getItem(nameKey);
-        
-        if (existingNameEntry) {
+      if (existingNameEntry) {
+        try {
           const parsed = JSON.parse(existingNameEntry);
           memberData = { id: parsed.id, name: yourName.trim() };
-        } else {
-          // Brand new member
+        } catch {
           memberData = { id: generateMemberId(), name: yourName.trim() };
         }
+      } else {
+        memberData = { id: generateMemberId(), name: yourName.trim() };
       }
 
+      // We no longer query Firestore for the exact name and steal their ID.
+      // `useMembers` handles visual deduplication for duplicate names!
+
       // Persist to localStorage so future rejoins are seamless
-      const nameKey = `taskhive_member_${yourName.trim().toLowerCase()}`;
       const roomKey = `room_${trimmedId}_member`;
       localStorage.setItem(nameKey, JSON.stringify(memberData));
       localStorage.setItem(roomKey, JSON.stringify(memberData));

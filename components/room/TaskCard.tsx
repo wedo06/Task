@@ -11,6 +11,7 @@ interface Props {
   onAssigneeChange: (assignee: string) => void;
   onDelete: () => void;
   animDelay?: number;
+  roomAdminId?: string;
 }
 
 // Status → next status (no cycling back from done)
@@ -57,7 +58,9 @@ const STATUS_DOT: Record<Task['status'], string> = {
   'done':        '#6cb86a',
 };
 
-export default function TaskCard({ task, currentMember, members, onStatusChange, onAssigneeChange, onDelete, animDelay = 0 }: Props) {
+
+
+export default function TaskCard({ task, currentMember, members, onStatusChange, onAssigneeChange, onDelete, animDelay = 0, roomAdminId }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
@@ -65,8 +68,9 @@ export default function TaskCard({ task, currentMember, members, onStatusChange,
   const isDone = task.status === 'done';
   const nextStatus = STATUS_NEXT[task.status];
   
-  // Can manage if unassigned or assigned to current user
-  const canManage = !task.assignee || (currentMember?.name && task.assignee.toLowerCase() === currentMember.name.toLowerCase());
+  // Can manage if unassigned, assigned to current user, OR if current user is room admin
+  const isRoomAdmin = currentMember?.id === roomAdminId;
+  const canManage = isRoomAdmin || !task.assignee || (currentMember?.name && task.assignee.toLowerCase() === currentMember.name.toLowerCase());
 
   const handleDelete = () => {
     if (confirming) {

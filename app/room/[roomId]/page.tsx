@@ -153,6 +153,7 @@ export default function RoomPage() {
               tasks={tasks}
               members={members}
               currentMember={currentMember}
+              roomAdminId={room?.adminId}
               loading={tasksLoading}
             />
           )}
@@ -170,8 +171,9 @@ export default function RoomPage() {
               roomId={roomId}
               members={members} 
               tasks={tasks} 
-              currentMemberId={currentMember?.id} 
-              currentMemberName={currentMember?.name}
+              currentMemberId={currentMember?.id || ''} 
+              currentMemberName={currentMember?.name || ''}
+              roomAdminId={room?.adminId}
             />
           </aside>
         )}

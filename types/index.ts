@@ -15,9 +15,10 @@ export interface Task {
 export interface Room {
   id: string;
   name: string;
-  passwordHash: string;
   createdAt: number;
+  passwordHash: string;
   createdBy: string;
+  adminId?: string;
 }
 
 export interface Member {

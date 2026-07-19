@@ -9,6 +9,7 @@ interface Props {
   members?: any[];
   onUnreadChange?: (hasUnread: boolean) => void;
   isActive?: boolean;
+  roomAdminId?: string;
 }
 
 function stringToColor(str: string): string {
@@ -18,7 +19,7 @@ function stringToColor(str: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-export function ChatPanel({ roomId, currentMemberId, currentMemberName, members = [], onUnreadChange, isActive = true }: Props) {
+export function ChatPanel({ roomId, currentMemberId, currentMemberName, members = [], onUnreadChange, isActive = true, roomAdminId }: Props) {
   const [activeChannelId, setActiveChannelId] = useState<string>('general');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { messages, channels, loading, sendMessage, createChannel, renameChannel } = useChat(roomId, activeChannelId, currentMemberId);
@@ -106,7 +107,7 @@ export function ChatPanel({ roomId, currentMemberId, currentMemberName, members 
         <button className={styles.iconBtn} onClick={() => setIsCreating(!isCreating)} title="New Channel">
           +
         </button>
-        <button className={styles.iconBtn} onClick={handleRename} title="Rename Channel" disabled={activeChannelId === 'general' || channels.find(c => c.id === activeChannelId)?.adminId !== currentMemberId}>
+        <button className={styles.iconBtn} onClick={handleRename} title="Rename Channel" disabled={activeChannelId === 'general' || (channels.find(c => c.id === activeChannelId)?.adminId !== currentMemberId && roomAdminId !== currentMemberId)}>
           ✎
         </button>
           <button className={styles.iconBtn} onClick={() => setIsFullscreen(!isFullscreen)} title="Toggle Fullscreen">

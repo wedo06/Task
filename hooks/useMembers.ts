@@ -17,10 +17,15 @@ export function useMembers(roomId: string) {
 
       for (const d of docs) {
         const lowerName = d.name.toLowerCase().trim();
+        // A device is truly online if it's explicitly marked online AND its last heartbeat was within the last 40 seconds
+        // (Heartbeat runs every 20s)
+        const isTrulyOnline = d.isOnline && (Date.now() - d.lastSeen < 40000);
+        d.isOnline = isTrulyOnline; // normalize the value on the document
+
         if (!seenNames.has(lowerName)) {
           seenNames.add(lowerName);
           items.push(d);
-        } else if (d.isOnline) {
+        } else if (isTrulyOnline) {
           // If a newer duplicate is online but the older isn't, we should update the older one's online status
           const existing = items.find(i => i.name.toLowerCase().trim() === lowerName);
           if (existing) existing.isOnline = true;

@@ -12,6 +12,7 @@ interface Props {
   members: Member[];
   currentMember: { id: string; name: string } | null;
   loading: boolean;
+  roomAdminId?: string;
 }
 
 const COLUMNS: {
@@ -48,7 +49,7 @@ const COLUMNS: {
   },
 ];
 
-export default function TaskBoard({ roomId, tasks, members, currentMember, loading }: Props) {
+export default function TaskBoard({ roomId, tasks, members, currentMember, loading, roomAdminId }: Props) {
   const [showAdd, setShowAdd] = useState(false);
   const [filter, setFilter] = useState<'all' | string>('all');
 
@@ -146,6 +147,7 @@ export default function TaskBoard({ roomId, tasks, members, currentMember, loadi
                       onAssigneeChange={(assignee) => updateTask(roomId, task.id, { assignee })}
                       onDelete={() => handleDelete(task.id)}
                       animDelay={idx * 60}
+                      roomAdminId={roomAdminId}
                     />
                   ))
                 )}
