@@ -1,12 +1,16 @@
 'use client';
+import { useState } from 'react';
 import { Member, Task } from '@/types';
 import { calcCompletion } from '@/lib/task-utils';
+import { ChatPanel } from './ChatPanel';
 import styles from './MembersSidebar.module.css';
 
 interface Props {
+  roomId: string;
   members: Member[];
   tasks: Task[];
   currentMemberId?: string;
+  currentMemberName?: string;
 }
 
 // Pastel candy colors for avatars
@@ -27,20 +31,38 @@ function stringToIndex(str: string): number {
   return Math.abs(hash) % AVATAR_COLORS.length;
 }
 
-export default function MembersSidebar({ members, tasks, currentMemberId }: Props) {
+export default function MembersSidebar({ roomId, members, tasks, currentMemberId, currentMemberName }: Props) {
+  const [activeTab, setActiveTab] = useState<'squad' | 'chat'>('squad');
   const getMemberTasks = (name: string) => tasks.filter((t) => t.assignee === name);
 
   return (
     <div className={styles.sidebar}>
-      <div className={styles.heading}>
-        Squad · {members.filter(m => m.isOnline).length} online
+      <div className={styles.tabs}>
+        <button 
+          className={`${styles.tabBtn} ${activeTab === 'squad' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('squad')}
+        >
+          Squad
+        </button>
+        <button 
+          className={`${styles.tabBtn} ${activeTab === 'chat' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('chat')}
+        >
+          Chat
+        </button>
       </div>
 
-      {members.length === 0 && (
-        <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 13, fontWeight: 600, padding: '20px 0' }}>
-          Nobody else here yet
-        </p>
-      )}
+      {activeTab === 'squad' ? (
+        <>
+          <div className={styles.heading}>
+            {members.filter(m => m.isOnline).length} online
+          </div>
+
+          {members.length === 0 && (
+            <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 13, fontWeight: 600, padding: '20px 0' }}>
+              Nobody else here yet
+            </p>
+          )}
 
       <div className={styles.memberList}>
         {members.map((member) => {
@@ -119,6 +141,16 @@ export default function MembersSidebar({ members, tasks, currentMemberId }: Prop
           <div className="progress-track">
             <div className="progress-fill" style={{ width: `${calcCompletion(tasks)}%` }} />
           </div>
+          </div>
+        )}
+      </>
+    ) : (
+        <div style={{ flex: 1, overflow: 'hidden' }}>
+          <ChatPanel 
+            roomId={roomId} 
+            currentMemberId={currentMemberId || ''} 
+            currentMemberName={currentMemberName || ''} 
+          />
         </div>
       )}
     </div>

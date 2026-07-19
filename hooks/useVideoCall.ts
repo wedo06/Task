@@ -98,7 +98,18 @@ export function useVideoCall(roomId: string, userId: string, userName: string) {
       // Join with token (or null for projects without a certificate)
       await client.join(AGORA_APP_ID, roomId, token, uid);
 
-      const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
+      const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks(
+        {},
+        {
+          encoderConfig: {
+            width: 480,
+            height: 360,
+            frameRate: 15,
+            bitrateMin: 200,
+            bitrateMax: 400,
+          },
+        }
+      );
       await client.publish([audioTrack, videoTrack]);
 
       setLocalAudioTrack(audioTrack);

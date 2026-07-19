@@ -44,3 +44,11 @@ export interface AIInsight {
   motivation: string;
   completionTrend: 'up' | 'down' | 'stable';
 }
+
+export interface ChatMessage {
+  id: string;
+  memberId: string;
+  memberName: string;
+  text: string;
+  timestamp: number;
+}

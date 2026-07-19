@@ -4,6 +4,41 @@
   flex-direction: column;
   gap: 20px;
   background: var(--bg-surface);
+  height: 100%;
+}
+
+.tabs {
+  display: flex;
+  background: rgba(0,0,0,0.03);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 6px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabBtn:hover {
+  color: var(--text-primary);
+  background: rgba(0,0,0,0.03);
+}
+
+.tabActive {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .heading {

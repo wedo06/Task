@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { db, doc, getDoc } from '@/lib/firebase';
+import { db, doc, getDoc, collection, query, where, getDocs } from '@/lib/firebase';
 import { generateMemberId, verifyPassword } from '@/lib/room-utils';
 import styles from './landing-forms.module.css';
 
@@ -36,29 +36,34 @@ export default function JoinRoom() {
         return;
       }
 
-      // Reuse persistent member ID for this name if it exists
-      const nameKey = `taskhive_member_${yourName.trim().toLowerCase()}`;
-      const roomKey = `room_${trimmedId}_member`;
-
-      // Check if already in this room (returning user)
-      const existingRoomEntry = localStorage.getItem(roomKey);
-      const existingNameEntry = localStorage.getItem(nameKey);
+      // Check Firestore to see if this name already exists in this room
+      const membersRef = collection(db, 'rooms', trimmedId, 'members');
+      const q = query(membersRef, where('name', '==', yourName.trim()));
+      const querySnapshot = await getDocs(q);
 
       let memberData: { id: string; name: string };
 
-      if (existingRoomEntry) {
-        // Same person rejoining — keep exact same ID
-        memberData = JSON.parse(existingRoomEntry);
-      } else if (existingNameEntry) {
-        // Same name, different room — reuse identity
-        const parsed = JSON.parse(existingNameEntry);
-        memberData = { id: parsed.id, name: yourName.trim() };
+      if (!querySnapshot.empty) {
+        // Person exists in DB! Adopt their exact ID
+        const existingDoc = querySnapshot.docs[0];
+        memberData = { id: existingDoc.id, name: existingDoc.data().name };
       } else {
-        // Brand new member
-        memberData = { id: generateMemberId(), name: yourName.trim() };
+        // Reuse persistent member ID for this name if it exists (from another room maybe)
+        const nameKey = `taskhive_member_${yourName.trim().toLowerCase()}`;
+        const existingNameEntry = localStorage.getItem(nameKey);
+        
+        if (existingNameEntry) {
+          const parsed = JSON.parse(existingNameEntry);
+          memberData = { id: parsed.id, name: yourName.trim() };
+        } else {
+          // Brand new member
+          memberData = { id: generateMemberId(), name: yourName.trim() };
+        }
       }
 
       // Persist to localStorage so future rejoins are seamless
+      const nameKey = `taskhive_member_${yourName.trim().toLowerCase()}`;
+      const roomKey = `room_${trimmedId}_member`;
       localStorage.setItem(nameKey, JSON.stringify(memberData));
       localStorage.setItem(roomKey, JSON.stringify(memberData));
 

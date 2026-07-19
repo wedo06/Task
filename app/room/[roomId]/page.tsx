@@ -159,7 +159,13 @@ export default function RoomPage() {
 
         {sidebarOpen && (
           <aside className={styles.sidebar}>
-            <MembersSidebar members={members} tasks={tasks} currentMemberId={currentMember?.id} />
+            <MembersSidebar 
+              roomId={roomId}
+              members={members} 
+              tasks={tasks} 
+              currentMemberId={currentMember?.id} 
+              currentMemberName={currentMember?.name}
+            />
           </aside>
         )}
       </div>

@@ -20,7 +20,13 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.filterWrap::-webkit-scrollbar {
+  display: none;
 }
 
 .filterChip {
