@@ -15,13 +15,21 @@ export function generateMemberId(): string {
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  const bcrypt = await import('bcryptjs');
-  return bcrypt.hash(password, 10);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const bcrypt = await import('bcryptjs');
-  return bcrypt.compare(password, hash);
+  // If the old hash is a bcrypt hash (starts with $2), fallback to bcrypt to avoid breaking existing rooms
+  if (hash.startsWith('$2')) {
+    const bcrypt = await import('bcryptjs');
+    return bcrypt.compare(password, hash);
+  }
+  const attemptHash = await hashPassword(password);
+  return attemptHash === hash;
 }
 
 export function getTodayDate(): string {
