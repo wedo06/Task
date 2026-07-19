@@ -1,12 +1,14 @@
 'use client';
 import { useState } from 'react';
-import { Task } from '@/types';
+import { Task, Member } from '@/types';
 import styles from './TaskCard.module.css';
 
 interface Props {
   task: Task;
   currentMember: { id: string; name: string } | null;
+  members: Member[];
   onStatusChange: (status: Task['status']) => void;
+  onAssigneeChange: (assignee: string) => void;
   onDelete: () => void;
   animDelay?: number;
 }
@@ -55,9 +57,10 @@ const STATUS_DOT: Record<Task['status'], string> = {
   'done':        '#6cb86a',
 };
 
-export default function TaskCard({ task, currentMember, onStatusChange, onDelete, animDelay = 0 }: Props) {
+export default function TaskCard({ task, currentMember, members, onStatusChange, onAssigneeChange, onDelete, animDelay = 0 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [showAssignDropdown, setShowAssignDropdown] = useState(false);
 
   const isDone = task.status === 'done';
   const nextStatus = STATUS_NEXT[task.status];
@@ -122,12 +125,36 @@ export default function TaskCard({ task, currentMember, onStatusChange, onDelete
           <p className={styles.desc}>{task.description}</p>
         )}
 
-        {task.assignee && (
+        {task.assignee ? (
           <div className={styles.assigneeRow}>
             <div className={styles.avatarChip}>
               {task.assignee.charAt(0).toUpperCase()}
             </div>
             <span className={styles.assigneeName}>{task.assignee}</span>
+          </div>
+        ) : (
+          <div className={styles.assigneeRow}>
+            {showAssignDropdown ? (
+              <select
+                className={styles.assignSelect}
+                onChange={(e) => {
+                  onAssigneeChange(e.target.value);
+                  setShowAssignDropdown(false);
+                }}
+                onBlur={() => setShowAssignDropdown(false)}
+                autoFocus
+              >
+                <option value="">Select someone...</option>
+                <option value={currentMember?.name || ''}>Me ({currentMember?.name})</option>
+                {members.filter(m => m.name !== currentMember?.name).map(m => (
+                  <option key={m.id} value={m.name}>{m.name}</option>
+                ))}
+              </select>
+            ) : (
+              <button className={styles.unassignedBtn} onClick={() => setShowAssignDropdown(true)}>
+                + Assign
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -141,7 +141,9 @@ export default function TaskBoard({ roomId, tasks, members, currentMember, loadi
                       key={task.id}
                       task={task}
                       currentMember={currentMember}
+                      members={members}
                       onStatusChange={(status) => handleStatusChange(task, status)}
+                      onAssigneeChange={(assignee) => updateTask(roomId, task.id, { assignee })}
                       onDelete={() => handleDelete(task.id)}
                       animDelay={idx * 60}
                     />

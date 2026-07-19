@@ -22,26 +22,43 @@ const PRIORITY_COLORS: Record<string, string> = {
 export default function AddTaskModal({ roomId, members, currentMember, onClose }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [assignee, setAssignee] = useState(currentMember?.name || '');
+  // Use array for multiple assignees
+  const [assignees, setAssignees] = useState<string[]>(currentMember ? [currentMember.name] : []);
   const [priority, setPriority] = useState<'low' | 'mid' | 'high'>('mid');
   const [loading, setLoading] = useState(false);
+
+  const toggleAssignee = (name: string) => {
+    setAssignees(prev =>
+      prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setAssignees(members.map(m => m.name));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) { toast.error('Task needs a title'); return; }
     setLoading(true);
     try {
-      await createTask(roomId, {
-        title: title.trim(),
-        description: description.trim(),
-        assignee: assignee.trim(),
-        priority,
-        status: 'todo',
-        createdBy: currentMember?.name || 'Anonymous',
-        date: getTodayDate(),
-        carriedOver: false,
-      });
-      toast.success('Task added!');
+      // If no assignees, create one unassigned task
+      const targets = assignees.length > 0 ? assignees : [''];
+      
+      await Promise.all(targets.map(async (assigneeName) => {
+        await createTask(roomId, {
+          title: title.trim(),
+          description: description.trim(),
+          assignee: assigneeName,
+          priority,
+          status: 'todo',
+          createdBy: currentMember?.name || 'Anonymous',
+          date: getTodayDate(),
+          carriedOver: false,
+        });
+      }));
+
+      toast.success(targets.length > 1 ? `Created ${targets.length} tasks!` : 'Task added!');
       onClose();
     } catch (err: any) {
       toast.error(err.message || 'Failed to add task');
@@ -89,27 +106,37 @@ export default function AddTaskModal({ roomId, members, currentMember, onClose }
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label}>Assign To</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label className={styles.label}>Assign To (Multiple)</label>
+              {members.length > 1 && (
+                <button type="button" className={styles.selectAllBtn} onClick={handleSelectAll}>
+                  Select All
+                </button>
+              )}
+            </div>
             <div className={styles.chipGroup}>
               <button
                 type="button"
-                className={`${styles.chip} ${assignee === '' ? styles.chipActive : ''}`}
-                style={assignee === '' ? { background: 'rgba(209,197,255,0.7)', borderColor: 'transparent' } : {}}
-                onClick={() => setAssignee('')}
+                className={`${styles.chip} ${assignees.length === 0 ? styles.chipActive : ''}`}
+                style={assignees.length === 0 ? { background: 'rgba(209,197,255,0.7)', borderColor: 'transparent' } : {}}
+                onClick={() => setAssignees([])}
               >
                 Unassigned
               </button>
-              {members.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  className={`${styles.chip} ${assignee === m.name ? styles.chipActive : ''}`}
-                  style={assignee === m.name ? { background: 'rgba(146,209,223,0.7)', borderColor: 'transparent' } : {}}
-                  onClick={() => setAssignee(m.name)}
-                >
-                  {m.name}
-                </button>
-              ))}
+              {members.map((m) => {
+                const isActive = assignees.includes(m.name);
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    className={`${styles.chip} ${isActive ? styles.chipActive : ''}`}
+                    style={isActive ? { background: 'rgba(146,209,223,0.7)', borderColor: 'transparent' } : {}}
+                    onClick={() => toggleAssignee(m.name)}
+                  >
+                    {m.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -134,7 +161,7 @@ export default function AddTaskModal({ roomId, members, currentMember, onClose }
           <div className={styles.footer}>
             <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
             <button id="submit-task" type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? <span className="spinner" style={{ width: 16, height: 16 }} /> : 'Add Task'}
+              {loading ? <span className="spinner" style={{ width: 16, height: 16 }} /> : 'Add Task(s)'}
             </button>
           </div>
         </form>

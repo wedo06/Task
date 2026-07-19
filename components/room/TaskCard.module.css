@@ -142,6 +142,37 @@
   font-family: var(--font-display);
 }
 
+.unassignedBtn {
+  font-size: 11px;
+  font-weight: 800;
+  font-family: var(--font-display);
+  background: rgba(144,144,170,0.15);
+  color: var(--text-muted);
+  border: 1px dashed rgba(144,144,170,0.4);
+  border-radius: 999px;
+  padding: 3px 10px;
+  transition: all 0.15s ease;
+  letter-spacing: 0.3px;
+}
+.unassignedBtn:hover {
+  background: var(--candy-blue);
+  color: #1a1a2e;
+  border-style: solid;
+  border-color: transparent;
+}
+
+.assignSelect {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  border-radius: 6px;
+  border: 1px solid var(--candy-blue);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  padding: 3px 6px;
+  outline: none;
+}
+
 /* ─── FOOTER ─── */
 .footer {
   padding: 10px 12px;

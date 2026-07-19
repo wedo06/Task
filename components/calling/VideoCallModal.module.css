@@ -28,13 +28,31 @@
 .callTitle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  color: rgba(26,26,46,0.6);
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: #c94070;
+  gap: 8px;
+}
+
+.fullscreenBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.6);
+  color: var(--text-primary);
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: all 0.15s ease;
+}
+.fullscreenBtn:hover {
+  background: rgba(255,255,255,1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .liveDot {

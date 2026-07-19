@@ -61,10 +61,25 @@
 .label {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.selectAllBtn {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--candy-blue);
+  background: rgba(146,209,223,0.15);
+  border: 1px solid rgba(146,209,223,0.4);
+  padding: 3px 8px;
+  border-radius: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+.selectAllBtn:hover {
+  background: var(--candy-blue);
+  color: #1a1a2e;
 }
 
 .textarea {
