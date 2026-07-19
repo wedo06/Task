@@ -1,0 +1,237 @@
+.history {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: -14px;
+}
+
+/* Timeline strip */
+.timeline {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.dayCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px 12px;
+  min-width: 88px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.dayCard:hover {
+  border-color: var(--candy-blue);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(146,209,223,0.25);
+}
+
+.dayCardSelected {
+  border-color: var(--candy-purple) !important;
+  background: rgba(209,197,255,0.12) !important;
+  box-shadow: 0 4px 16px rgba(209,197,255,0.4) !important;
+}
+
+.dayCardToday {
+  border-color: rgba(208,244,167,0.6);
+  background: rgba(208,244,167,0.06);
+}
+
+.dayDate {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dayRing {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dayPct {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.dayStats {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.noTasks { color: var(--text-muted); font-size: 10px; }
+
+/* Detail card */
+.detail {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: fadeIn 0.3s ease;
+  box-shadow: var(--shadow-card);
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detailDate {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.detailPct {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.memberGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 10px;
+}
+
+.memberStat {
+  background: rgba(0,0,0,0.03);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color var(--transition-fast);
+}
+.memberStat:hover { border-color: var(--candy-blue); }
+
+.memberStatTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memberStatName {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.memberStatPct {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: #7b5ea7;
+}
+
+.memberStatCount {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Task list */
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.historyTask {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(0,0,0,0.025);
+  border: 1.5px solid var(--border-subtle);
+  transition: border-color var(--transition-fast);
+}
+.historyTask:hover { border-color: var(--candy-blue); }
+
+.historyTaskDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.historyTaskTitle {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.historyTaskDone {
+  text-decoration: line-through;
+  color: var(--text-muted) !important;
+}
+
+.historyTaskAssignee {
+  font-size: 11px;
+  color: #7b5ea7;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+.carriedTag {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255,196,147,0.3);
+  color: #a06020;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(255,196,147,0.5);
+}
+
+.noTasksDetail {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 24px;
+}

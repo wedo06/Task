@@ -1,0 +1,145 @@
+.sidebar {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--bg-surface);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid var(--border-subtle);
+}
+
+/* Completion ring */
+.overallProgress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(0,0,0,0.025);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-subtle);
+}
+
+.ringWrap {
+  position: relative;
+  width: 80px; height: 80px;
+}
+
+.ring { width: 100%; height: 100%; }
+
+.ringPct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ringNum {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.ringLabel {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.progressLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Members */
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(0,0,0,0.025);
+  border: 1.5px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.member:hover {
+  border-color: var(--candy-blue);
+  background: rgba(146,209,223,0.08);
+}
+
+.memberYou {
+  border-color: rgba(209,197,255,0.5) !important;
+  background: rgba(209,197,255,0.08) !important;
+}
+
+.memberAvatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.memberInfo { flex: 1; min-width: 0; }
+
+.memberName {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memberSubtext {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.onlineDot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #6cb86a;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(108,184,106,0.25);
+}
+
+.offlineDot {
+  background: var(--border-subtle);
+  box-shadow: none;
+}
+
+.memberProgress {
+  margin-top: 4px;
+}
